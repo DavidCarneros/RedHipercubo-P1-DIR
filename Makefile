@@ -4,11 +4,12 @@ mcc  := mpicc
 cc := gcc
 
 
+all: 
+	$(cc) DataGenerator.c -o DataGenerator
+	$(mcc) RedHipercubo.c -o RedHipercubo
 
 generateData8:
-	$(cc) DataGenerator.c -o DataGenerator
 	./DataGenerator 8
 
 hiperCubo_D3:
-	$(mcc) RedHipercubo.c -o RedHipercubo
 	$(run) -n 8 ./RedHipercubo
