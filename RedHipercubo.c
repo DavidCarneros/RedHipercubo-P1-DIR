@@ -14,9 +14,9 @@
  *                  y quedarnos con el valor maximo. Esto se repite en las D dimensiones
  * 
  *                   Desde 1 hasta D:
- *                     Enviar(vecino[D],Miumero);
- *                     Recibir(vecino[D],SuNumero);
- *                     MiNumero <- max(MiNumero,SuNumero);
+ *                     Enviar(vecino[D],Miumero)
+ *                     Recibir(vecino[D],SuNumero)
+ *                     MiNumero <- max(MiNumero,SuNumero)
  * 
  *                  El algoritmo tendra una complejidad de O(log2(n))
  * 
