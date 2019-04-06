@@ -9,10 +9,18 @@
  * Date created     : 12/03/2019
  * 
  * Purpose          : Programa encargado de generar NUM numeros reales aleatorios
- *                    y guardarlos en el archivo datos.dat para la red hipercubo
+ *                  y guardarlos en el archivo datos.dat para la red hipercubo
+ *                  El algoritmo consiste en enviar y recibir el dato de una dimension D
+ *                  y quedarnos con el valor maximo. Esto se repite en las D dimensiones
  * 
+ *                   Desde 1 hasta D:
+ *                     Enviar(vecino[D],Miumero);
+ *                     Recibir(vecino[D],SuNumero);
+ *                     MiNumero <- max(MiNumero,SuNumero);
  * 
- * ***************************************/
+ *                  El algoritmo tendra una complejidad de O(log2(n))
+ * 
+ * *************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,8 +29,6 @@
 #include <mpi.h>
 
 #define D 3
-#define TRUE   1
-#define FALSE  0
 #define MAX_ITEMS  1024
 #define FILENAME   "datos.dat"
 #define TRUE   1
@@ -35,7 +41,7 @@ void calcularMaximo(int rank, double numero);
 int maximo(int a, int b);
 
 
-/*MAIN*/
+/*******  MAIN *******/
 int main(int argc, char* argv[]){
     double *datos;
     double buffNumero;
@@ -54,12 +60,12 @@ int main(int argc, char* argv[]){
         obtenerDatos(datos,&continuar,&cantidadNumeros);
         /*Si el numero de datos no es igual a 2 elevado al numero de dimensiones*/
         if(cantidadNumeros!=((int)pow(2,D))){
-            fprintf(stderr,"Error con el numero de datos\n");
+            fprintf(stderr,"Error con el número de datos\n");
             continuar = FALSE;
         }
         /* Si la cantidad de nodos no es la misma que 2 elevado al numero de dimensiones*/
         if(size!=((int)pow(2,D))){
-            fprintf(stderr,"Error con el numero de nodos\n");
+            fprintf(stderr,"Error con el úumero de nodos\n");
             continuar = FALSE;
         }
         /* Multidifuncimos para saber si continuar con la ejecucion*/
@@ -119,7 +125,7 @@ void obtenerDatos(double* datos,int *continuar,int *cantidadNumeros){
     char *token;
     
     FILE *file;
-
+    /* Creamos la linea que vamos a leer del fichero */
     linea = malloc(MAX_ITEMS*sizeof(char));
 
     if((file = fopen(FILENAME,"r"))==NULL){
@@ -128,6 +134,7 @@ void obtenerDatos(double* datos,int *continuar,int *cantidadNumeros){
 
     } 
     else{
+     /*Hacemos uso de la funcion strtok para leer la cadena separada por comas*/
         fgets(linea,MAX_ITEMS*sizeof(char),file);
         token = strtok(linea,",");
         
@@ -163,7 +170,7 @@ void calcularMaximo(int rank, double numero){
     double suNumero;
 
     for(i=0;i<D;i++){
-        MPI_Bsend(&numero,1,MPI_DOUBLE,vecinos[i],1,MPI_COMM_WORLD);
+        MPI_BSend(&numero,1,MPI_DOUBLE,vecinos[i],1,MPI_COMM_WORLD);
         MPI_Recv(&suNumero,1,MPI_DOUBLE,vecinos[i],1,MPI_COMM_WORLD,&status);
         numero = maximo(numero,suNumero);
     }
@@ -173,7 +180,6 @@ void calcularMaximo(int rank, double numero){
     }
 
 }
-
 /**
  * 
  * Devuelve el maximo de 2 valores pasados por argumentos
